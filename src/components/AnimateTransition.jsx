@@ -1,9 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 
-export default function AnimateTransition({
-  children,
-  location,
-}) {
+export default function AnimateTransition({ children, location }) {
   return (
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
