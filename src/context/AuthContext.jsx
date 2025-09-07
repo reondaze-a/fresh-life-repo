@@ -1,137 +1,124 @@
-"use client"; // Context runs in the browser (uses localStorage, state, effects)
+// src/context/AuthContext.jsx
+"use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import auth from "@/lib/auth"; // JS client from /lib/auth
-
-// You can replace `any` with your real user shape via JSDoc later
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import auth from "@/lib/auth"; // make sure this is the cookie-first client (no Bearer header)
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({
   children,
-  baseUrl,
+  baseUrl = "/api", // same-origin by default
   autoLoginAfterRegister = true,
 }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // session restore
+  const [loading, setLoading] = useState(true); // restoring session
   const [authLoading, setAuthLoading] = useState(false); // login/register in-flight
   const [error, setError] = useState(null);
 
+  // Build API client (cookie-based fetch)
+  const api = useMemo(() => auth(baseUrl), [baseUrl]);
 
-  const api = useMemo(() => {
-    const resolved = baseUrl ?? process.env.NEXT_PUBLIC_API_BASE;
-    if (!resolved) {
-      // Helpful error if you forget to set .env
-      console.warn(
-        "AuthProvider: Missing API base URL. Set baseUrl prop or NEXT_PUBLIC_API_BASE in .env.local"
-      );
-    }
-    return auth(resolved || ""); // empty string won't break if you override in tests
-  }, [baseUrl]);
-
-  // Restore session on mount from localStorage
+  // Restore session on mount by asking the server who we are (cookie is sent automatically)
   useEffect(() => {
-    let mounted = true; // avoid state updates after unmount
-    const jwt = typeof window !== "undefined" ? localStorage.getItem("jwt") : null;
-
-    if (!jwt) {
-      setLoading(false);
-      return;
-    }
-
-    api.setToken(jwt);
-
-    api
-      .getUserData()
-      .then((data) => {
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await api.getUserData(); // expects { user } (401 if not logged in)
         if (!mounted) return;
-        setUser(data);
-      })
-      .catch(() => {
-        // clear broken session
+        setUser(data.user ?? data);
+      } catch {
         if (!mounted) return;
-        localStorage.removeItem("jwt");
-        api.setToken(null);
         setUser(null);
-      })
-      .finally(() => {
+      } finally {
         if (!mounted) return;
         setLoading(false);
-      });
-
+      }
+    })();
     return () => {
       mounted = false;
     };
   }, [api]);
 
-  // login flow (store token -> fetch user -> set state)
+  // LOGIN: call /api/login, then /api/users/me
   const login = async ({ identifier, password }) => {
     setAuthLoading(true);
     setError(null);
     try {
-      const data = await api.loginUser({ identifier, password });
-      if (!data?.token) throw new Error("Login did not return a token");
-      localStorage.setItem("jwt", data.token);
-      api.setToken(data.token);
-
-      const userData = await api.getUserData();
-      setUser(userData);
-
-      return userData;
+      await api.loginUser({ identifier, password }); // sets httpOnly cookie
+      const me = await api.getUserData();
+      setUser(me.user ?? me);
+      return me.user ?? me;
     } catch (err) {
-      setError(err?.message || "Login failed");
-      throw err;
+      const msg = err?.message || "Login failed";
+      setError(msg);
+      throw new Error(msg);
     } finally {
       setAuthLoading(false);
     }
   };
 
-  // register flow; optionally auto-login
+  // REGISTER: call /api/register (cookie set there as well), then hydrate
   const register = async (payload) => {
     setAuthLoading(true);
     setError(null);
     try {
-      await api.registerUser(payload);
-
+      const res = await api.registerUser(payload); // cookie set by server
       if (autoLoginAfterRegister) {
-        return await login({ identifier: payload.email, password: payload.password });
+        // Either use returned user or call /me to be safe
+        const me = res?.user ? res : await api.getUserData();
+        setUser((me.user ?? me) || null);
+        return (me.user ?? me) || null;
       }
     } catch (err) {
-      setError(err?.message || "Registration failed");
-      throw err;
+      const msg = err?.message || "Registration failed";
+      setError(msg);
+      throw new Error(msg);
     } finally {
       setAuthLoading(false);
     }
   };
 
-  // logout clears local state + token
-  const logout = () => {
-    localStorage.removeItem("jwt");
-    api.setToken(null);
-    setUser(null);
+  // LOGOUT: tell server to delete cookie, then clear local state
+  const logout = async () => {
+    try {
+      await fetch(`${baseUrl}/logout`, {
+        method: "POST",
+        credentials: "same-origin", // cookies sent by default on same origin; harmless here
+      });
+    } finally {
+      setUser(null);
+    }
   };
 
   const value = {
     user,
     setUser,
+    isLoggedIn: !!user,
     loading,
     authLoading,
     error,
     login,
     register,
     logout,
-    isLoggedIn: !!user,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) {
-    // helpful error if hook is used outside provider
+  if (!ctx)
     throw new Error("useAuth must be used within <AuthProvider>");
-  }
   return ctx;
 }
-

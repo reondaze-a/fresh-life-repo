@@ -96,7 +96,7 @@ export default function ProfilePage() {
                 Logout
               </button>
               <button
-                onClick={() => router.push("/profile/edit?modal=1")}
+                onClick={() => router.push("/profile/edit")}
                 className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition"
               >
                 Edit Profile

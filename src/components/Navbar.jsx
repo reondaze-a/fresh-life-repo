@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
 
   return (
@@ -54,10 +56,10 @@ export default function Navbar() {
           </li>
           <li>
             <Link
-              href="/login"
+              href={`${user ? "/profile" : "/login"} `}
               className="inline-block transition-transform duration-150 active:scale-95 hover:text-orange-500"
             >
-              Login
+              {user ? "Profile" : "Login"}
             </Link>
           </li>
         </ul>
@@ -120,6 +122,15 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
             >
               Contact
+            </Link>
+          </li>
+          <li>
+            <Link
+              href={`${user ? "/profile" : "/login"} `}
+              className="block py-2 hover:text-orange-500 active:scale-95"
+              onClick={() => setOpen(false)}
+            >
+              {user ? "Profile" : "Login"}
             </Link>
           </li>
         </ul>

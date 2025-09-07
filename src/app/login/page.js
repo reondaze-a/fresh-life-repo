@@ -13,14 +13,12 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // read ?from=/some/path (fallback to home)
-  const from = searchParams.get("from") || "/";
-  // optional: if you show this in an intercepted modal, pass ?modal=1 and we’ll router.back() after success
-  const isModal = searchParams.get("modal") === "1";
-
   const { login, authLoading } = useAuth();
   const { values, handleChange, errors, isValid, resetForm } =
     useFormAndValidation();
+
+  const from = searchParams.get("from") || "/";
+  const isModal = searchParams.get("modal") === "1";
 
   const [error, setError] = useState("");
 
@@ -39,6 +37,7 @@ export default function LoginPage() {
       await login({ identifier, password });
       setError("");
       resetForm();
+
       if (isModal) {
         router.back();
       } else {
@@ -46,7 +45,6 @@ export default function LoginPage() {
       }
     } catch (err) {
       setError(err?.message || "Login failed. Please try again.");
-      // console.error(err); // optional
     }
   }
 
@@ -145,7 +143,7 @@ export default function LoginPage() {
       {/* Extra links */}
       <div className="mt-6 text-center text-sm text-zinc-400">
         <p>
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <Link
             href="/register"
             className="text-orange-500 hover:underline"
