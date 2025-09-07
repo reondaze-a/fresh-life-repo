@@ -1,28 +1,23 @@
-// app/login/page.jsx
+// app/login/page.jsx (simplified)
 "use client";
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-
 import { useAuth } from "@/context/AuthContext";
 import { useFormAndValidation } from "@/hooks/useFormAndValidation";
 
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const { login, authLoading } = useAuth();
   const { values, handleChange, errors, isValid, resetForm } =
     useFormAndValidation();
 
   const from = searchParams.get("from") || "/";
-  const isModal = searchParams.get("modal") === "1";
 
   const [error, setError] = useState("");
-
-  // auto-clear general error after 4s
   useEffect(() => {
     if (!error) return;
     const t = setTimeout(() => setError(""), 4000);
@@ -32,17 +27,10 @@ export default function LoginPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     const { identifier, password } = values;
-
     try {
       await login({ identifier, password });
-      setError("");
       resetForm();
-
-      if (isModal) {
-        router.back();
-      } else {
-        router.replace(from);
-      }
+      router.replace(from); // full-page nav only
     } catch (err) {
       setError(err?.message || "Login failed. Please try again.");
     }
@@ -140,10 +128,9 @@ export default function LoginPage() {
         </button>
       </form>
 
-      {/* Extra links */}
       <div className="mt-6 text-center text-sm text-zinc-400">
         <p>
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
             className="text-orange-500 hover:underline"

@@ -5,7 +5,8 @@ import { connectToDB } from "@/lib/mongoose";
 import User from "@/models/User";
 
 export async function requireUser() {
-  const token = cookies().get("auth")?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore().get("auth")?.value;
   if (!token)
     throw Object.assign(new Error("Unauthorized"), { status: 401 });
 

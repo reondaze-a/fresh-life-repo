@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 "use client";
 
 import Link from "next/link";
@@ -5,8 +6,12 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { user, loading, authLoading } = useAuth(); // ← pull loading too
   const [open, setOpen] = useState(false);
+
+  const busy = loading || authLoading; // ← session restore OR auth in-flight
+  const authHref = user ? "/profile" : "/login"; // ← no trailing space
+  const authLabel = busy ? "Loading..." : user ? "Profile" : "Login";
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-800 bg-black/70 backdrop-blur">
@@ -15,14 +20,12 @@ export default function Navbar() {
           Fresh Life Church
         </Link>
 
-        {/* Softer press + hover, transition/ease; added a11y attrs */}
         <button
           className="rounded-md p-2 ring-1 ring-zinc-700 md:hidden transition-transform duration-200 ease-out hover:bg-zinc-900/50 active:scale-[0.97]"
           onClick={() => setOpen((v) => !v)}
           aria-label="Toggle Menu"
           aria-expanded={open}
           aria-controls="mobile-nav"
-          aria-haspopup="true"
           type="button"
         >
           <span aria-hidden>☰</span>
@@ -55,18 +58,20 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link
-              href={`${user ? "/profile" : "/login"} `}
-              className="inline-block transition-transform duration-150 active:scale-95 hover:text-orange-500"
-            >
-              {user ? "Profile" : "Login"}
-            </Link>
+            {busy ? (
+              <span className="opacity-70">{authLabel}</span>
+            ) : (
+              <Link
+                href={authHref}
+                className="inline-block transition-transform duration-150 active:scale-95 hover:text-orange-500"
+              >
+                {authLabel}
+              </Link>
+            )}
           </li>
         </ul>
       </nav>
 
-      {/* Keep menu mounted and animate height+fade+slide using a grid-rows trick.
-          Added pointer-events to prevent interaction while visually closed. */}
       <div
         id="mobile-nav"
         className={[
@@ -77,61 +82,38 @@ export default function Navbar() {
           open ? "pointer-events-auto" : "pointer-events-none",
         ].join(" ")}
       >
-        {/* overflow-hidden on inner wrapper so the row height animation looks clean */}
         <ul className="mr-auto max-w-6xl overflow-hidden px-4 pb-3 items-center">
+          {[
+            ["Home", "/"],
+            ["About", "/about"],
+            ["Sermons", "/sermons"],
+            ["Events", "/events"],
+            ["Contact", "/contact"],
+          ].map(([label, href]) => (
+            <li key={href}>
+              <Link
+                className="block py-2 hover:text-orange-500 active:scale-95"
+                href={href}
+                onClick={() => setOpen(false)}
+              >
+                {label}
+              </Link>
+            </li>
+          ))}
           <li>
-            <Link
-              className="block py-2 hover:text-orange-500 active:scale-95"
-              href="/"
-              onClick={() => setOpen(false)}
-            >
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="block py-2 hover:text-orange-500 active:scale-95"
-              href="/about"
-              onClick={() => setOpen(false)}
-            >
-              About
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="block py-2 hover:text-orange-500 active:scale-95"
-              href="/sermons"
-              onClick={() => setOpen(false)}
-            >
-              Sermons
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="block py-2 hover:text-orange-500 active:scale-95"
-              href="/events"
-              onClick={() => setOpen(false)}
-            >
-              Events
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="block py-2 hover:text-orange-500 active:scale-95"
-              href="/contact"
-              onClick={() => setOpen(false)}
-            >
-              Contact
-            </Link>
-          </li>
-          <li>
-            <Link
-              href={`${user ? "/profile" : "/login"} `}
-              className="block py-2 hover:text-orange-500 active:scale-95"
-              onClick={() => setOpen(false)}
-            >
-              {user ? "Profile" : "Login"}
-            </Link>
+            {busy ? (
+              <span className="block py-2 opacity-70">
+                Loading...
+              </span>
+            ) : (
+              <Link
+                href={authHref}
+                className="block py-2 hover:text-orange-500 active:scale-95"
+                onClick={() => setOpen(false)}
+              >
+                {authLabel}
+              </Link>
+            )}
           </li>
         </ul>
       </div>
