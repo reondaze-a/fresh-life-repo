@@ -7,7 +7,9 @@ export default function HeroCard({
   title,
   subtitle,
   buttonPrimary,
+  buttonPrimaryFunction,
   buttonSecondary,
+  buttonSecondaryFunction,
   images,
 }) {
   const [index, setIndex] = useState(0);
@@ -60,12 +62,18 @@ export default function HeroCard({
 
           <div className="mt-4 flex gap-3">
             {buttonPrimary && (
-              <button className="rounded-3xl bg-white px-4 py-2 font-semibold text-black transition duration-300 active:scale-95 hover:bg-zinc-400 hover:cursor-pointer">
+              <button
+                onClick={() => buttonPrimaryFunction}
+                className="rounded-3xl bg-white px-4 py-2 font-semibold text-black transition duration-300 active:scale-95 hover:bg-zinc-400 hover:cursor-pointer"
+              >
                 {buttonPrimary}
               </button>
             )}
             {buttonSecondary && (
-              <button className="rounded-3xl border border-zinc-700 px-4 py-2 font-semibold text-white duration-300 transition active:scale-95 hover:text-orange-500 hover:cursor-pointer">
+              <button
+                onClick={buttonSecondaryFunction}
+                className="rounded-3xl border border-zinc-700 px-4 py-2 font-semibold text-white duration-300 transition active:scale-95 hover:text-orange-500 hover:cursor-pointer"
+              >
                 {buttonSecondary}
               </button>
             )}

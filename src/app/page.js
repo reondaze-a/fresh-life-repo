@@ -1,10 +1,15 @@
+"use client";
+
 import PageLayout from "@/components/PageLayout";
 import HeroCard from "@/components/HeroCard";
 import ContentCard from "@/components/ContentCard";
 import GridCard from "@/components/GridCard";
 import ImageCarousel from "@/components/ImageCarousel";
 
+import { useRouter } from "next/navigation";
+
 export default function HomePage() {
+  const router = useRouter();
   const cardButtonClass =
     "mt-4 rounded-3xl px-4 py-2 font-semibold transition-all duration-300 active:scale-95 active:text-orange-500 ease-in-out hover:text-orange-500 cursor-pointer";
 
@@ -14,7 +19,9 @@ export default function HomePage() {
         title="Welcome to Fresh Life Church"
         subtitle="We're happy to have you here. God bless!"
         buttonPrimary="Connect with us"
+        buttonPrimaryFunction={null}
         buttonSecondary="Learn more"
+        buttonSecondaryFunction={() => router.push("/about")}
         images={[
           "/images/hero-1.png",
           "/images/hero-2.png",

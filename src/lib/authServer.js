@@ -6,7 +6,7 @@ import User from "@/models/User";
 
 export async function requireUser() {
   const cookieStore = await cookies();
-  const token = cookieStore().get("auth")?.value;
+  const token = cookieStore.get("auth")?.value;
   if (!token)
     throw Object.assign(new Error("Unauthorized"), { status: 401 });
 
