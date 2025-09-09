@@ -2,21 +2,7 @@
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import User from "@/models/User";
-
-const sanitize = (u) => ({
-  _id: u._id,
-  email: u.email,
-  username: u.username,
-  firstName: u.firstName,
-  lastName: u.lastName,
-  avatar: u.avatar,
-  createdAt: u.createdAt,
-  updatedAt: u.updatedAt,
-});
-
-export async function getMeController(userDoc) {
-  return sanitize(userDoc);
-}
+import { sanitize } from "@/lib/apiResponse";
 
 export async function updateMeController(userId, data) {
   const update = {};

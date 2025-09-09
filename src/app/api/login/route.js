@@ -2,10 +2,13 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { setAuthCookie } from "@/lib/authServer";
+import { sanitize } from "@/lib/apiResponse";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import { connectToDB } from "@/lib/mongoose";
+import { set } from "mongoose";
+
 
 export async function POST(req) {
   try {
@@ -29,25 +32,12 @@ export async function POST(req) {
       { expiresIn: "3d" }
     );
 
-    cookies().set("auth", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 3,
-    });
+    await setAuthCookie(token);
 
     // You usually don't need to return the token if it's in a cookie:
     return NextResponse.json({
       ok: true,
-      user: {
-        _id: user._id,
-        email: user.email,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        avatar: user.avatar,
-      },
+      user: sanitize(user), // return sanitized user object
     });
   } catch (err) {
     return NextResponse.json(
