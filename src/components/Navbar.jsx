@@ -21,14 +21,16 @@ export default function Navbar() {
         </Link>
 
         <button
-          className="rounded-md p-2 ring-1 ring-zinc-700 md:hidden transition-transform duration-200 ease-out hover:bg-zinc-900/50 active:scale-[0.97]"
+          className="rounded-md p-2 ring-1 bg-zinc-100 ring-zinc-700 md:hidden transition-transform duration-200 ease-out hover:bg-zinc-900/50 active:scale-[0.97]"
           onClick={() => setOpen((v) => !v)}
           aria-label="Toggle Menu"
           aria-expanded={open}
           aria-controls="mobile-nav"
           type="button"
         >
-          <span aria-hidden>☰</span>
+          <span aria-hidden className="text-black">
+            ☰
+          </span>
         </button>
 
         <ul className="hidden gap-6 md:flex">
