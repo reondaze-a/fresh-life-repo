@@ -50,9 +50,8 @@ export function AuthProvider({
   const login = async ({ identifier, password }) => {
     setAuthLoading(true);
     setError(null);
-    try {
-      await api.loginUser({ identifier, password }); // sets httpOnly cookie
-      const me = await api.getUserData();
+    try { 
+      const me = await api.loginUser({ identifier, password });
       setUser(me.user ?? me);
       return me.user ?? me;
     } catch (err) {

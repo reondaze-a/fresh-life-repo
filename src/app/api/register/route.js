@@ -5,7 +5,8 @@ import bcrypt from "bcryptjs";
 import validator from "validator";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { setAuthCookie } from "@/lib/authServer";
+import { sanitize } from "@/lib/apiResponse";
 import User from "@/models/User";
 import { connectToDB } from "@/lib/mongoose";
 
@@ -85,28 +86,13 @@ export async function POST(req) {
       expiresIn: "3d",
     });
 
-    cookies().set("auth", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 3,
-    });
+    await setAuthCookie(token);
 
     // Return sanitized user and 201 Created
     return NextResponse.json(
       {
         ok: true,
-        user: {
-          _id: doc._id,
-          email: doc.email,
-          username: doc.username,
-          firstName: doc.firstName,
-          lastName: doc.lastName,
-          avatar: doc.avatar,
-          createdAt: doc.createdAt,
-          updatedAt: doc.updatedAt,
-        },
+        user: sanitize(doc),
       },
       { status: 201 }
     );

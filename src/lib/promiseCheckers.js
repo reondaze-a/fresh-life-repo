@@ -1,4 +1,4 @@
-// Check fetch Response and throw with a helpful message
+// Check fetch Response and throw
 export async function checkResponse(res) {
   if (res.ok) {
     return await res.json();

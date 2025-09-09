@@ -5,29 +5,32 @@ import {
 } from "@/lib/promiseCheckers";
 
 /**
- * Cookie-first auth client for Next route handlers at /api/*
- * - No in-memory token, no Authorization header needed
- * - Browser auto-sends httpOnly "auth" cookie on same-origin requests
+ * Cookie-first auth client for Next /api/*.
+ * - Same-origin: cookies are sent automatically.
+ * - If you later call a different origin, switch credentials to "include"
+ *   and set SameSite=None; Secure server-side.
  */
 export default function auth(
   baseUrl = "/api",
   routes = { signup: "/register", signin: "/login", me: "/users/me" }
 ) {
   async function request(path, init = {}) {
+    const hasBody = init.body != null;
+
     try {
       const res = await fetch(`${baseUrl}${path}`, {
         cache: "no-store",
-        // same-origin (default) includes cookies automatically
-        credentials: "same-origin",
+        credentials: "same-origin", // default on same origin; harmless to keep
         ...init,
         headers: {
-          "Content-Type": "application/json",
+          ...(hasBody ? { "Content-Type": "application/json" } : {}),
           ...(init.headers || {}),
         },
       });
-      return await checkResponse(res);
+      return await checkResponse(res); // should parse JSON or throw on !ok
     } catch (err) {
-      normalizeFetchError(err);
+      // Important: let callers .catch(...) properly
+      throw normalizeFetchError(err);
     }
   }
 
@@ -46,7 +49,7 @@ export default function auth(
   }
 
   function getUserData() {
-    return request(routes.me);
+    return request(routes.me); // GET, no headers/body
   }
 
   function updateUserData(payload) {
@@ -56,10 +59,5 @@ export default function auth(
     });
   }
 
-  return {
-    registerUser,
-    loginUser,
-    getUserData,
-    updateUserData,
-  };
+  return { registerUser, loginUser, getUserData, updateUserData };
 }
