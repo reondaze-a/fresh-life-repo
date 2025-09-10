@@ -14,10 +14,10 @@ function toRes(err) {
 const sanitize = (u) => ({
   _id: u._id,
   email: u.email,
-  username: u.username,
   firstName: u.firstName,
   lastName: u.lastName,
   avatar: u.avatar,
+  role: u.role,
   createdAt: u.createdAt,
   updatedAt: u.updatedAt,
 });

@@ -1,39 +1,37 @@
 // app/@modal/(.)profile/edit/page.jsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/Modals/Modal";
 import { useAuth } from "@/context/AuthContext";
+import { useFormAndValidation } from "@/hooks/useFormAndValidation";
 
 export default function EditProfileModal() {
   const router = useRouter();
   const { user, setUser } = useAuth();
 
-  const [form, setForm] = useState(() => ({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    username: user?.username || "",
-    email: user?.email || "",
-    avatar: user?.avatar || "",
-  }));
+  const { values, handleChange, errors, isValid, resetForm } =
+    useFormAndValidation();
+
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
-  const disabled = useMemo(() => {
-    if (
-      !form.firstName?.trim() ||
-      !form.lastName?.trim() ||
-      !form.email?.trim()
-    )
-      return true;
-    return saving;
-  }, [form, saving]);
-
-  function onChange(e) {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
-  }
+  // prefill form with user data
+  useEffect(() => {
+    if (user) {
+      resetForm(
+        {
+          firstName: user.firstName || "",
+          lastName: user.lastName || "",
+          email: user.email || "",
+          avatar: user.avatar || "",
+        },
+        {},
+        true
+      );
+    }
+  }, [user, resetForm]);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -45,20 +43,17 @@ export default function EditProfileModal() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName: form.firstName.trim(),
-          lastName: form.lastName.trim(),
-          username: form.username?.trim() || undefined,
-          email: form.email.trim(),
-          avatar: form.avatar?.trim() || undefined,
+          firstName: values.firstName.trim(),
+          lastName: values.lastName.trim(),
+          email: values.email.trim(),
+          avatar: values.avatar?.trim() || undefined,
         }),
       });
 
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.message || "Update failed");
 
-      // Update auth context with the returned user
-      setUser(data.user || null);
-
+      setUser(data.user || null); // update context
       router.back(); // close modal
     } catch (e) {
       setErr(e?.message || "Something went wrong.");
@@ -73,41 +68,39 @@ export default function EditProfileModal() {
         Edit profile
       </h2>
 
-      <form onSubmit={onSubmit} className="space-y-3">
+      <form onSubmit={onSubmit} className="space-y-3" noValidate>
         <Field
           label="First name"
           name="firstName"
-          value={form.firstName}
-          onChange={onChange}
+          value={values.firstName || ""}
+          onChange={handleChange}
+          error={errors.firstName}
           required
         />
         <Field
           label="Last name"
           name="lastName"
-          value={form.lastName}
-          onChange={onChange}
+          value={values.lastName || ""}
+          onChange={handleChange}
+          error={errors.lastName}
           required
-        />
-        <Field
-          label="Username (optional)"
-          name="username"
-          value={form.username}
-          onChange={onChange}
         />
         <Field
           type="email"
           label="Email"
           name="email"
-          value={form.email}
-          onChange={onChange}
+          value={values.email || ""}
+          onChange={handleChange}
+          error={errors.email}
           required
         />
         <Field
           type="url"
           label="Avatar URL (optional)"
           name="avatar"
-          value={form.avatar}
-          onChange={onChange}
+          value={values.avatar || ""}
+          onChange={handleChange}
+          error={errors.avatar}
         />
 
         {err && <p className="text-sm text-red-500">{err}</p>}
@@ -123,10 +116,10 @@ export default function EditProfileModal() {
           </button>
           <button
             type="submit"
-            disabled={disabled}
+            disabled={saving || !isValid}
             className={[
               "rounded-lg px-4 py-2 font-semibold transition active:scale-[0.98]",
-              disabled
+              saving || !isValid
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : "bg-white text-black hover:bg-zinc-200",
             ].join(" ")}
@@ -139,12 +132,13 @@ export default function EditProfileModal() {
   );
 }
 
-/* --- Small reusable field --- */
+/* --- Reusable field --- */
 function Field({
   label,
   name,
   value,
   onChange,
+  error,
   type = "text",
   required,
 }) {
@@ -162,10 +156,12 @@ function Field({
         className={[
           "w-full rounded-lg px-3 py-2 outline-none",
           "bg-black text-white placeholder:text-zinc-500",
-          "border border-zinc-700 focus:ring-2 focus:ring-orange-500",
+          "border focus:ring-2 focus:ring-orange-500",
+          error ? "border-red-500" : "border-zinc-700",
         ].join(" ")}
         placeholder={label}
       />
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </label>
   );
 }

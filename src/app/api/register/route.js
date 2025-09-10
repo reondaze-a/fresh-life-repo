@@ -12,8 +12,7 @@ import { connectToDB } from "@/lib/mongoose";
 
 export async function POST(req) {
   try {
-    const { email, password, firstName, lastName, username, avatar } =
-      await req.json();
+    const { email, password, firstName, lastName } = await req.json();
 
     await connectToDB();
 
@@ -38,21 +37,11 @@ export async function POST(req) {
     }
 
     const emailLower = email.toLowerCase().trim();
-    const usernameLower = username?.toLowerCase().trim();
 
     // Pre-check for duplicates (also catch E11000 below just in case)
     if (await User.exists({ email: emailLower })) {
       return NextResponse.json(
         { message: "Email already exists" },
-        { status: 409 }
-      );
-    }
-    if (
-      usernameLower &&
-      (await User.exists({ username: usernameLower }))
-    ) {
-      return NextResponse.json(
-        { message: "Username already exists" },
         { status: 409 }
       );
     }
@@ -66,16 +55,12 @@ export async function POST(req) {
         password: hash,
         firstName,
         lastName,
-        username: usernameLower || undefined,
-        avatar,
+        avatar: undefined, // default image URL
+        role: "member", // default role
       });
     } catch (err) {
       if (err?.code === 11000) {
-        const message = err.keyPattern?.email
-          ? "Email already exists"
-          : err.keyPattern?.username
-          ? "Username already exists"
-          : "Duplicate key";
+        const message = "Email already exists";
         return NextResponse.json({ message }, { status: 409 });
       }
       throw err;

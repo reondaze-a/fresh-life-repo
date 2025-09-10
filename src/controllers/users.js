@@ -10,8 +10,6 @@ export async function updateMeController(userId, data) {
     update.firstName = String(data.firstName).trim();
   if (data.lastName !== undefined)
     update.lastName = String(data.lastName).trim();
-  if (data.username !== undefined)
-    update.username = String(data.username).trim().toLowerCase();
   if (data.avatar !== undefined)
     update.avatar = String(data.avatar).trim();
   if (data.email !== undefined) {

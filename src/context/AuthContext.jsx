@@ -47,11 +47,11 @@ export function AuthProvider({
   }, [api]);
 
   // LOGIN: call /api/login, then /api/users/me
-  const login = async ({ identifier, password }) => {
+  const login = async ({ email, password }) => {
     setAuthLoading(true);
     setError(null);
-    try { 
-      const me = await api.loginUser({ identifier, password });
+    try {
+      const me = await api.loginUser({ email, password });
       setUser(me.user ?? me);
       return me.user ?? me;
     } catch (err) {

@@ -73,11 +73,6 @@ export default function ProfilePage() {
             <h1 className="text-3xl font-bold">
               {first || "User"} {last}
             </h1>
-            {user.username && (
-              <p className="text-lg text-gray-400">
-                @{user.username}
-              </p>
-            )}
             {user.email && (
               <p className="mt-2 text-gray-300">{user.email}</p>
             )}

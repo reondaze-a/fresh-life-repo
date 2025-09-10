@@ -19,15 +19,6 @@ export default function RegisterPage() {
   const { values, handleChange, errors, isValid, resetForm } =
     useFormAndValidation();
 
-  // local confirm password + validation
-  const [confirm, setConfirm] = useState("");
-  const confirmError = useMemo(() => {
-    if (!values.password || !confirm) return "";
-    return values.password !== confirm
-      ? "Passwords do not match"
-      : "";
-  }, [values.password, confirm]);
-
   // general error message
   const [error, setError] = useState("");
   useEffect(() => {
@@ -36,25 +27,21 @@ export default function RegisterPage() {
     return () => clearTimeout(t);
   }, [error]);
 
-  const disabled = authLoading || !isValid || !!confirmError;
+  const disabled = authLoading || !isValid;
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (confirmError) return;
 
     const payload = {
       firstName: values.firstName?.trim(),
       lastName: values.lastName?.trim(),
       email: values.email?.trim(),
       password: values.password,
-      username: values.username?.trim() || undefined,
-      avatar: values.avatar?.trim() || undefined, // URL string (optional)
     };
 
     try {
       await register(payload); // sets cookie server-side, hydrates user in context
       resetForm();
-      setConfirm("");
 
       if (isModal) router.back();
       else router.replace(from);
@@ -130,28 +117,6 @@ export default function RegisterPage() {
           )}
         </label>
 
-        {/* Username (optional) */}
-        <label className="block">
-          <span className="mb-1 block text-sm text-zinc-300">
-            Username (optional)
-          </span>
-          <input
-            name="username"
-            type="text"
-            value={values.username || ""}
-            onChange={handleChange}
-            className={`${inputBase} ${
-              errors.username ? borderErr : borderOk
-            }`}
-            placeholder="janedoe"
-          />
-          {errors.username && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.username}
-            </p>
-          )}
-        </label>
-
         {/* Email */}
         <label className="block">
           <span className="mb-1 block text-sm text-zinc-300">
@@ -190,7 +155,7 @@ export default function RegisterPage() {
             value={values.password || ""}
             onChange={handleChange}
             className={`${inputBase} ${
-              errors.password || confirmError ? borderErr : borderOk
+              errors.password ? borderErr : borderOk
             }`}
             placeholder="••••••••"
           />
@@ -201,7 +166,7 @@ export default function RegisterPage() {
           )}
         </label>
 
-        {/* Confirm Password (client-only check) */}
+        {/* Confirm Password */}
         <label className="block">
           <span className="mb-1 block text-sm text-zinc-300">
             Confirm password
@@ -210,38 +175,16 @@ export default function RegisterPage() {
             name="confirmPassword"
             type="password"
             required
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
+            value={values.confirmPassword || ""}
+            onChange={handleChange}
             className={`${inputBase} ${
-              confirmError ? borderErr : borderOk
+              errors.confirmPassword ? borderErr : borderOk
             }`}
             placeholder="••••••••"
           />
-          {confirmError && (
+          {errors.confirmPassword && (
             <p className="mt-1 text-sm text-red-500">
-              {confirmError}
-            </p>
-          )}
-        </label>
-
-        {/* Avatar URL (optional) */}
-        <label className="block">
-          <span className="mb-1 block text-sm text-zinc-300">
-            Avatar URL (optional)
-          </span>
-          <input
-            name="avatar"
-            type="url"
-            value={values.avatar || ""}
-            onChange={handleChange}
-            className={`${inputBase} ${
-              errors.avatar ? borderErr : borderOk
-            }`}
-            placeholder="https://example.com/me.jpg"
-          />
-          {errors.avatar && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.avatar}
+              {errors.confirmPassword}
             </p>
           )}
         </label>

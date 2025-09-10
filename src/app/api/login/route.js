@@ -7,24 +7,19 @@ import { sanitize } from "@/lib/apiResponse";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import { connectToDB } from "@/lib/mongoose";
-import { set } from "mongoose";
-
 
 export async function POST(req) {
   try {
-    const { identifier, password } = await req.json();
-    if (!identifier || !password) {
+    const { email, password } = await req.json();
+    if (!email || !password) {
       return NextResponse.json(
-        { message: "Email/Username and password are required" },
+        { message: "Email and password are required" },
         { status: 400 }
       );
     }
 
     await connectToDB();
-    const user = await User.findUserByCredentials(
-      identifier,
-      password
-    );
+    const user = await User.findUserByCredentials(email, password);
 
     const token = jwt.sign(
       { _id: user._id },

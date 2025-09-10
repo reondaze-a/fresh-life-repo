@@ -26,9 +26,9 @@ export default function LoginPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const { identifier, password } = values;
+    const { email, password } = values;
     try {
-      await login({ identifier, password });
+      await login({ email, password });
       resetForm();
       router.replace(from); // full-page nav only
     } catch (err) {
@@ -46,12 +46,12 @@ export default function LoginPage() {
         {/* Username / Email */}
         <label className="block">
           <span className="mb-1 block text-sm text-zinc-300">
-            Username / Email
+            Email
           </span>
           <input
-            name="identifier"
+            name="email"
             type="text"
-            value={values.identifier || ""}
+            value={values.email || ""}
             onChange={handleChange}
             required
             autoComplete="username email"
@@ -60,14 +60,14 @@ export default function LoginPage() {
               "w-full rounded-lg px-3 py-2 outline-none",
               "bg-black text-white placeholder:text-zinc-500",
               "focus:ring-2 focus:ring-orange-500",
-              errors.identifier || error
+              errors.email || error
                 ? "border border-red-500"
                 : "border border-zinc-700",
             ].join(" ")}
           />
-          {errors.identifier && (
+          {errors.email && (
             <p className="mt-1 text-sm text-red-500">
-              {errors.identifier}
+              {errors.email}
             </p>
           )}
         </label>
