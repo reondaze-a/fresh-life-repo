@@ -57,7 +57,7 @@ export default function Footer() {
         {/* Bottom row */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           {/* Copyright + policies */}
-          <div className="space-y-2 flex flex-col items-center sm:space-y-0 sm:space-x-4 sm:flex gap-1">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:space-x-4 sm:space-y-0">
             <span>
               © {new Date().getFullYear()} Fresh Life Church. All
               rights reserved.
