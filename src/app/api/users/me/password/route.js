@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/authServer";
 import { toRes } from "@/lib/apiResponse";
-import { changePasswordController } from "@/controllers/users";
+import { changePasswordController } from "@/controllers/usersController";
 
 export async function POST(req) {
   try {

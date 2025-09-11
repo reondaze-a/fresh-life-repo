@@ -4,9 +4,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/authServer";
 import { toRes, sanitize } from "@/lib/apiResponse";
-import {
-  updateMeController,
-} from "@/controllers/users";
+import { updateMeController } from "@/controllers/usersController";
 
 export async function GET() {
   try {

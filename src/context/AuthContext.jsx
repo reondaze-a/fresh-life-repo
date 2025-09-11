@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import auth from "@/lib/auth"; // make sure this is the cookie-first client (no Bearer header)
+import auth from "@/lib/authRequest"; // make sure this is the cookie-first client (no Bearer header)
 
 const AuthContext = createContext(null);
 
