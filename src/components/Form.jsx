@@ -5,13 +5,11 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useAuth } from "@/context/AuthContext";
 import { useFormAndValidation } from "@/hooks/useFormAndValidation";
 
-export default function LoginPage() {
+export default function Form({ children }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, authLoading } = useAuth();
   const { values, handleChange, errors, isValid, resetForm } =
     useFormAndValidation();
 
