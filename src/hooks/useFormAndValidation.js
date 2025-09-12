@@ -69,6 +69,14 @@ export function useFormAndValidation() {
     []
   );
 
+  const errorTimeOut = (err, setErr) => {
+    useEffect(() => {
+      if (!err) return;
+      const t = setTimeout(() => setErr(""), 4000);
+      return () => clearTimeout(t);
+    }, [err]);
+  };
+
   return {
     values,
     handleChange,
@@ -77,5 +85,6 @@ export function useFormAndValidation() {
     resetForm,
     setValues,
     setIsValid,
+    errorTimeOut,
   };
 }
