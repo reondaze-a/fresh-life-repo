@@ -12,7 +12,13 @@ import {
  */
 export default function auth(
   baseUrl = "/api",
-  routes = { signup: "/register", signin: "/login", me: "/users/me" }
+  routes = {
+    signup: "/register",
+    signin: "/login",
+    logout: "/logout",
+    me: "/users/me",
+    forgot: "/forgot",
+  }
 ) {
   async function request(path, init = {}) {
     const hasBody = init.body != null;
@@ -59,5 +65,19 @@ export default function auth(
     });
   }
 
-  return { registerUser, loginUser, getUserData, updateUserData };
+  function logoutUser() {
+    return request(routes.logout, {
+      method: "POST",
+      credentials: "same-origin",
+    });
+  }
+
+  function forgotPassword(payload) {
+    return request(routes.forgot, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  return { registerUser, loginUser, getUserData, updateUserData, logoutUser, forgotPassword };
 }

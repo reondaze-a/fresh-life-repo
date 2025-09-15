@@ -87,10 +87,7 @@ export function AuthProvider({
   // LOGOUT: tell server to delete cookie, then clear local state
   const logout = async () => {
     try {
-      await fetch(`${baseUrl}/logout`, {
-        method: "POST",
-        credentials: "same-origin", // cookies sent by default on same origin; harmless here
-      });
+      await api.logoutUser();
     } finally {
       setUser(null);
     }

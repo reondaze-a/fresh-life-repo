@@ -36,13 +36,16 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Find by email OR username, then compare password
+// Find by email, then compare password
 UserSchema.statics.findUserByCredentials = async function (
   email,
   password
 ) {
-  // Prefer direct email match when identifier looks like an email
-  const user = await this.findOne(email).select("+password");
+  const login = String(email || "")
+    .trim()
+    .toLowerCase();
+
+  const user = await this.findOne({ email: login }).select("+password");
   if (!user) {
     throw new Error("Incorrect email or password");
   }
@@ -54,13 +57,6 @@ UserSchema.statics.findUserByCredentials = async function (
 
   return user; // password is selected here; don't send it back in responses
 };
-
-// Optional: auto-hash on save (only if you aren't hashing elsewhere)
-// UserSchema.pre("save", async function (next) {
-//   if (!this.isModified("password")) return next();
-//   this.password = await bcrypt.hash(this.password, 10);
-//   next();
-// });
 
 const User =
   mongoose.models.User || mongoose.model("User", UserSchema);
