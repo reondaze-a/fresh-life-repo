@@ -31,7 +31,9 @@ const UserSchema = new mongoose.Schema(
         message: "Must be a valid URL",
       },
     },
-    role: { type: String },
+    role: { type: String, default: "member" },
+    resetToken: { type: String, default: null },
+    resetTokenExpiry: { type: Date, default: null },
   },
   { timestamps: true }
 );
@@ -45,7 +47,9 @@ UserSchema.statics.findUserByCredentials = async function (
     .trim()
     .toLowerCase();
 
-  const user = await this.findOne({ email: login }).select("+password");
+  const user = await this.findOne({ email: login }).select(
+    "+password"
+  );
   if (!user) {
     throw new Error("Incorrect email or password");
   }

@@ -20,7 +20,6 @@ export function AuthProvider({
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); // restoring session
   const [authLoading, setAuthLoading] = useState(false); // login/register in-flight
-  const [error, setError] = useState(null);
 
   // Build API client (cookie-based fetch)
   const api = useMemo(() => auth(baseUrl), [baseUrl]);
@@ -49,14 +48,12 @@ export function AuthProvider({
   // LOGIN: call /api/login, then /api/users/me
   const login = async ({ email, password }) => {
     setAuthLoading(true);
-    setError(null);
     try {
       const me = await api.loginUser({ email, password });
       setUser(me.user ?? me);
       return me.user ?? me;
     } catch (err) {
       const msg = err?.message || "Login failed";
-      setError(msg);
       throw new Error(msg);
     } finally {
       setAuthLoading(false);
@@ -66,7 +63,7 @@ export function AuthProvider({
   // REGISTER: call /api/register (cookie set there as well), then hydrate
   const register = async (payload) => {
     setAuthLoading(true);
-    setError(null);
+
     try {
       const res = await api.registerUser(payload); // cookie set by server
       if (autoLoginAfterRegister) {
@@ -77,7 +74,6 @@ export function AuthProvider({
       }
     } catch (err) {
       const msg = err?.message || "Registration failed";
-      setError(msg);
       throw new Error(msg);
     } finally {
       setAuthLoading(false);
@@ -93,16 +89,40 @@ export function AuthProvider({
     }
   };
 
+  const forgot = async ({ email }) => {
+    try {
+      const res = await api.forgotPassword({ email });
+      return res;
+    } catch (err) {
+      const msg = err?.message || "Request failed.";
+      throw new Error(msg);
+    }
+  };
+
+  const resetPassword = async ({ token, password }) => {
+    try {
+      const res = await api.forgotPassword({
+        token,
+        password,
+      });
+      return res;
+    } catch (err) {
+      const msg = err?.message || "Reset password failed.";
+      throw new Error(msg);
+    }
+  };
+
   const value = {
     user,
     setUser,
     isLoggedIn: !!user,
     loading,
     authLoading,
-    error,
     login,
     register,
     logout,
+    forgot,
+    resetPassword,
   };
 
   return (

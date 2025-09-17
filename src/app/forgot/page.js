@@ -6,6 +6,7 @@ import Link from "next/link";
 import FormWrapper from "@/components/Forms/FormWrapper";
 import FormField from "@/components/Forms/FormField";
 import { useFormAndValidation } from "@/hooks/useFormAndValidation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ForgotPage() {
   const {
@@ -17,6 +18,8 @@ export default function ForgotPage() {
     errorTimeOut,
   } = useFormAndValidation();
 
+  const { forgot } = useAuth();
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
@@ -25,21 +28,13 @@ export default function ForgotPage() {
   errorTimeOut(error, setError);
 
   async function onSubmit(e) {
+    const { email } = values;
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const res = await fetch("/api/forgot", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // some backends always return 200 for privacy; this page works with either
-        body: JSON.stringify({ email: values.email || "" }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok)
-        throw new Error(data?.message || "Something went wrong");
-
+      await forgot({ email });
       setSent(true);
       resetForm();
     } catch (e) {
@@ -49,7 +44,6 @@ export default function ForgotPage() {
     }
   }
 
-  // success state (generic on purpose: don't reveal if email exists)
   if (sent) {
     return (
       <div className="mx-auto max-w-md p-6 min-h-svh text-white">

@@ -18,6 +18,7 @@ export default function auth(
     logout: "/logout",
     me: "/users/me",
     forgot: "/forgot",
+    resetPassword: "/reset-password",
   }
 ) {
   async function request(path, init = {}) {
@@ -79,5 +80,20 @@ export default function auth(
     });
   }
 
-  return { registerUser, loginUser, getUserData, updateUserData, logoutUser, forgotPassword };
+  function resetPassword(payload) {
+    return request(routes.resetPassword, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  return {
+    registerUser,
+    loginUser,
+    getUserData,
+    updateUserData,
+    logoutUser,
+    forgotPassword,
+    resetPassword,
+  };
 }
