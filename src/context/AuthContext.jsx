@@ -101,7 +101,7 @@ export function AuthProvider({
 
   const resetPassword = async ({ token, password }) => {
     try {
-      const res = await api.forgotPassword({
+      const res = await api.resetPassword({
         token,
         password,
       });
