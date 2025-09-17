@@ -55,7 +55,10 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link className="hover:text-orange-500" href="/contact">
+            <Link
+              className="hover:text-orange-500"
+              href="/contact-us"
+            >
               Contact
             </Link>
           </li>
@@ -90,7 +93,7 @@ export default function Navbar() {
             ["About", "/about"],
             ["Sermons", "/sermons"],
             ["Events", "/events"],
-            ["Contact", "/contact"],
+            ["Contact", "/contact-us"],
           ].map(([label, href]) => (
             <li key={href}>
               <Link
