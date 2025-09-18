@@ -13,11 +13,11 @@ export default function SermonsPage() {
           purpose
         </h2>
         <p className="text-white">
-          Since 2000, we've already developed a place to be the center
-          of growing in the faith of Jesus, being a fresh person in
-          God. What began as a small gathering has grown into a
-          living, breathing movement—anchored in truth, driven by
-          purpose, and filled with people who believe that life in
+          Since 2000, we&apos;ve already developed a place to be the
+          center of growing in the faith of Jesus, being a fresh
+          person in God. What began as a small gathering has grown
+          into a living, breathing movement—anchored in truth, driven
+          by purpose, and filled with people who believe that life in
           Christ is anything but ordinary.
         </p>
       </ContentCard>
@@ -30,11 +30,11 @@ export default function SermonsPage() {
           purpose
         </h2>
         <p className="text-white">
-          Since 2000, we've already developed a place to be the center
-          of growing in the faith of Jesus, being a fresh person in
-          God. What began as a small gathering has grown into a
-          living, breathing movement—anchored in truth, driven by
-          purpose, and filled with people who believe that life in
+          Since 2000, we&apos;ve already developed a place to be the
+          center of growing in the faith of Jesus, being a fresh
+          person in God. What began as a small gathering has grown
+          into a living, breathing movement—anchored in truth, driven
+          by purpose, and filled with people who believe that life in
           Christ is anything but ordinary.
         </p>
       </ContentCard>

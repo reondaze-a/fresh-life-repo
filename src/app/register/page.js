@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useAuth } from "@/context/AuthContext";
 import { useFormAndValidation } from "@/hooks/useFormAndValidation";
@@ -22,12 +22,12 @@ export default function RegisterPage() {
     errors,
     isValid,
     resetForm,
-    errorTimeOut,
+    useErrorTimeOut,
   } = useFormAndValidation();
 
   // general error message
   const [error, setError] = useState("");
-  errorTimeOut(error, setError);
+  useErrorTimeOut(error, setError);
 
   async function handleSubmit(e) {
     e.preventDefault();

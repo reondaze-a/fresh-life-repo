@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFormAndValidation } from "@/hooks/useFormAndValidation";
 import FormWrapper from "@/components/Forms/FormWrapper";
 import FormField from "@/components/Forms/FormField";
@@ -17,14 +17,14 @@ export default function LoginPage() {
     errors,
     isValid,
     resetForm,
-    errorTimeOut,
+    useErrorTimeOut,
   } = useFormAndValidation();
 
   const from = searchParams.get("from") || "/"; // where to go after logging in
 
   // general error message
   const [error, setError] = useState("");
-  errorTimeOut(error, setError);
+  useErrorTimeOut(error, setError);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -71,7 +71,7 @@ export default function LoginPage() {
 
       <div className="mt-6 text-center text-sm text-zinc-400">
         <p>
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
             className="text-orange-500 hover:underline"

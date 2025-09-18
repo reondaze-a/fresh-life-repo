@@ -1,7 +1,7 @@
 // app/forgot/page.jsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import FormWrapper from "@/components/Forms/FormWrapper";
 import FormField from "@/components/Forms/FormField";
@@ -15,7 +15,7 @@ export default function ForgotPage() {
     errors,
     isValid,
     resetForm,
-    errorTimeOut,
+    useErrorTimeOut,
   } = useFormAndValidation();
 
   const { forgot } = useAuth();
@@ -25,7 +25,7 @@ export default function ForgotPage() {
   const [sent, setSent] = useState(false);
 
   // auto-clear general error after 4s
-  errorTimeOut(error, setError);
+  useErrorTimeOut(error, setError);
 
   async function onSubmit(e) {
     const { email } = values;
@@ -49,7 +49,7 @@ export default function ForgotPage() {
       <div className="mx-auto max-w-md p-6 min-h-svh text-white">
         <h1 className="mb-2 text-3xl font-bold">Check your email</h1>
         <p className="text-zinc-300 mb-6">
-          If an account exists for that address, we've sent a password
+          If an account exists for that address, we&apos;ve sent a password
           reset link.
         </p>
         <Link
@@ -84,7 +84,7 @@ export default function ForgotPage() {
         placeholder="you@example.com"
       />
       <p className="text-sm text-zinc-400">
-        Enter your email and we'll send you a link to reset your
+        Enter your email and we&apos;ll send you a link to reset your
         password.
       </p>
     </FormWrapper>

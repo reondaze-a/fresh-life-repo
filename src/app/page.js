@@ -51,8 +51,8 @@ export default function HomePage() {
 
           <GridCard title="Live Streams">
             <p>
-              Don't have time to come to church? Don't worry! We also
-              have live streams every Sunday.
+              Don&apos;t have time to come to church? Don&apos;t
+              worry! We also have live streams every Sunday.
             </p>
             <button className={cardButtonClass}>
               Visit our channel →

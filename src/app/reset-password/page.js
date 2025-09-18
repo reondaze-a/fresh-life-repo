@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
     errors,
     isValid,
     resetForm,
-    errorTimeOut,
+    useErrorTimeOut,
   } = useFormAndValidation();
 
   const token = searchParams.get("token"); // token from links
@@ -28,7 +28,7 @@ export default function ResetPasswordPage() {
   const [sent, setSent] = useState(false);
 
   // auto-clear general error after 4s
-  errorTimeOut(error, setError);
+  useErrorTimeOut(error, setError);
 
   async function onSubmit(e) {
     const { password } = values;
