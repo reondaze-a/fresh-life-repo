@@ -2,15 +2,16 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useFormAndValidation } from "@/hooks/useFormAndValidation";
 import FormWrapper from "@/components/Forms/FormWrapper";
 import FormField from "@/components/Forms/FormField";
+import { useQueryParam } from "@/context/QueryParamsContext";
 
 export default function LoginPage() {
   const { authLoading, login } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
+
   const {
     values,
     handleChange,
@@ -20,7 +21,11 @@ export default function LoginPage() {
     useErrorTimeOut,
   } = useFormAndValidation();
 
-  const from = searchParams.get("from") || "/"; // where to go after logging in
+  const fromRaw = useQueryParam("from", "/");
+  const from =
+    typeof fromRaw === "string" && fromRaw.startsWith("/")
+      ? fromRaw
+      : "/";
 
   // general error message
   const [error, setError] = useState("");
@@ -39,55 +44,56 @@ export default function LoginPage() {
   }
 
   return (
-    <FormWrapper
-      title="Login"
-      onSubmit={handleSubmit}
-      error={error}
-      disabled={!isValid || authLoading}
-      submitLabel={authLoading ? "Signing in..." : "Sign in"}
-    >
-      <FormField
-        label="Email"
-        name="email"
-        type="text"
-        value={values.email || ""}
-        onChange={handleChange}
-        error={errors.email}
-        required
-        autoComplete="username email"
-        placeholder="you@example.com"
-      />
-      <FormField
-        label="Password"
-        name="password"
-        type="password"
-        value={values.password || ""}
-        onChange={handleChange}
-        error={errors.password}
-        required
-        autoComplete="current-password"
-        placeholder="••••••••"
-      />
-
-      <div className="mt-6 text-center text-sm text-zinc-400">
-        <p>
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/register"
-            className="text-orange-500 hover:underline"
-          >
-            Sign up
-          </Link>
-        </p>
-        <p className="mt-2">
-          <Link
-            href="/forgot"
-            className="text-orange-500 hover:underline"
-          >
-            Forgot your password?
-          </Link>
-        </p>
-      </div>
-    </FormWrapper>
+    <>
+      <FormWrapper
+        title="Login"
+        onSubmit={handleSubmit}
+        error={error}
+        disabled={!isValid || authLoading}
+        submitLabel={authLoading ? "Signing in..." : "Sign in"}
+      >
+        <FormField
+          label="Email"
+          name="email"
+          type="text"
+          value={values.email || ""}
+          onChange={handleChange}
+          error={errors.email}
+          required
+          autoComplete="username email"
+          placeholder="you@example.com"
+        />
+        <FormField
+          label="Password"
+          name="password"
+          type="password"
+          value={values.password || ""}
+          onChange={handleChange}
+          error={errors.password}
+          required
+          autoComplete="current-password"
+          placeholder="••••••••"
+        />
+        <div className="mt-6 text-center text-sm text-zinc-400">
+          <p>
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="text-orange-500 hover:underline"
+            >
+              Sign up
+            </Link>
+          </p>
+          <p className="mt-2">
+            <Link
+              href="/forgot"
+              className="text-orange-500 hover:underline"
+            >
+              Forgot your password?
+            </Link>
+          </p>
+        </div>
+      </FormWrapper>
+    </>
   );
 }
