@@ -1,6 +1,8 @@
 # Mock Repo — Church Community Web App
 
-A modern Next.js application for a church community. The goal is to connect with members, publish announcements, list scheduled events, and share sermons (text, audio, or video). Future iterations will support authenticated member areas and role‑based tools for church staff.
+A modern Next.js application for a church community. The goal is to connect with members, publish announcements, list scheduled events, and share sermons (text, audio, or video). Future iterations will support authenticated member areas and role‑based tools for church staff. 
+
+[Visit the demo](https://mock-repo-k1nk.vercel.app/)
 
 ---
 
