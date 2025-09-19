@@ -6,11 +6,13 @@ import { useState, useEffect, Suspense } from "react";
 import { useFormAndValidation } from "@/hooks/useFormAndValidation";
 import FormWrapper from "@/components/Forms/FormWrapper";
 import FormField from "@/components/Forms/FormField";
-import { useQueryParam } from "@/context/QueryParamsContext";
+
 
 export default function LoginPage() {
   const { authLoading, login } = useAuth();
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const from = searchParams.get("from") || "/";
 
   const {
     values,
@@ -21,11 +23,6 @@ export default function LoginPage() {
     useErrorTimeOut,
   } = useFormAndValidation();
 
-  const fromRaw = useQueryParam("from", "/");
-  const from =
-    typeof fromRaw === "string" && fromRaw.startsWith("/")
-      ? fromRaw
-      : "/";
 
   // general error message
   const [error, setError] = useState("");
